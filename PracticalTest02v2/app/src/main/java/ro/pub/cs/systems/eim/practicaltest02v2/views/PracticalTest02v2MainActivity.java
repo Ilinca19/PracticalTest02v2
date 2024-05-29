@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import ro.pub.cs.systems.eim.practicaltest02v2.R;
 import ro.pub.cs.systems.eim.practicaltest02v2.general.Constants;
+import ro.pub.cs.systems.eim.practicaltest02v2.network.ClientThread;
 import ro.pub.cs.systems.eim.practicaltest02v2.network.ServerThread;
 
 public class PracticalTest02v2MainActivity extends AppCompatActivity {
@@ -63,22 +64,61 @@ public class PracticalTest02v2MainActivity extends AppCompatActivity {
 
         addButton.setOnClickListener(view -> {
             Log.i(Constants.TAG, "[Main Activity] Add button was pressed");
-
-
+            String clientAddress = clientAddressEditText.getText().toString();
+            String clientPort = clientPortEditText.getText().toString();
+            if (clientAddress.isEmpty() || clientPort.isEmpty()) {
+                Toast.makeText(getApplicationContext(), "[Main Activity] Client address and port should be filled!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (serverThread == null || !serverThread.isAlive()) {
+                Toast.makeText(getApplicationContext(), "[Main Activity] Server thread is not running!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String operand1 = operand1EditText.getText().toString();
+            String operand2 = operand2EditText.getText().toString();
+            String operator = "add";
+            if (operand1.isEmpty() || operand2.isEmpty()) {
+                Toast.makeText(getApplicationContext(), "[Main Activity] Operands should be filled!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            resultTextView.setText("");
+            ClientThread clientThread = new ClientThread(
+                    clientAddress, Integer.parseInt(clientPort), operand1, operand2, operator, resultTextView);
+            clientThread.start();
         });
 
         multiplyButton.setOnClickListener(view -> {
             Log.i(Constants.TAG, "[Main Activity] Multiply button was pressed");
-
+            String clientAddress = clientAddressEditText.getText().toString();
+            String clientPort = clientPortEditText.getText().toString();
+            if (clientAddress.isEmpty() || clientPort.isEmpty()) {
+                Toast.makeText(getApplicationContext(), "[Main Activity] Client address and port should be filled!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (serverThread == null || !serverThread.isAlive()) {
+                Toast.makeText(getApplicationContext(), "[Main Activity] Server thread is not running!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String operand1 = operand1EditText.getText().toString();
+            String operand2 = operand2EditText.getText().toString();
+            String operator = "mul";
+            if (operand1.isEmpty() || operand2.isEmpty()) {
+                Toast.makeText(getApplicationContext(), "[Main Activity] Operands should be filled!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            resultTextView.setText("");
+            ClientThread clientThread = new ClientThread(
+                    clientAddress, Integer.parseInt(clientPort), operand1, operand2, operator, resultTextView);
+            clientThread.start();
         });
     }
 
     @Override
     protected void onDestroy() {
         Log.i(Constants.TAG, "[Main Activity] onDestroy() callback method was invoked");
-//        if (serverThread != null) {
-//            serverThread.stopThread();
-//        }
+        if (serverThread != null) {
+            serverThread.stopThread();
+        }
         super.onDestroy();
     }
 }
